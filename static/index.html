@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS Presupuestos - JRobotWeb</title>
+    
+    <!-- Google Fonts: Outfit for heading, Inter for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Inter"', 'sans-serif'],
+                        outfit: ['"Outfit"', 'sans-serif'],
+                    },
+                    colors: {
+                        bgMain: '#0f172a', /* Deep Slate */
+                        bgPanel: '#1e293b', /* Slate 800 */
+                        bgHeader: '#0f172a',
+                        borderClr: '#334155', /* Slate 700 */
+                        accentBlue: '#3b82f6', /* Blue 500 */
+                        accentPurple: '#8b5cf6', /* Purple 500 */
+                        accentRed: '#ef4444',
+                        accentOrange: '#f97316',
+                        accentGreen: '#10b981',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom scrollbar styling -->
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .pro-glow {
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+            border-color: rgba(139, 92, 246, 0.6);
+        }
+    </style>
+    
+    <!-- jsPDF for client-side PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body class="bg-bgMain text-slate-200 min-h-screen flex flex-col font-sans antialiased">
+
+    <!-- =========================================================================
+         1. SECCIÓN: LANDING PAGE (Visible si no está logueado)
+         ========================================================================= -->
+    <div id="landingPage" class="flex-1 flex flex-col">
+        <!-- Navigation -->
+        <nav class="border-b border-borderClr py-4 px-6 md:px-12 flex justify-between items-center bg-bgMain/95 sticky top-0 z-50 backdrop-blur-md">
+            <div class="flex items-center gap-2">
+                <div class="h-10 w-10 bg-gradient-to-tr from-accentBlue to-accentPurple rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <i class="fa-solid fa-calculator text-white text-xl"></i>
+                </div>
+                <span class="text-xl font-bold font-outfit bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">JRobotWeb SaaS</span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <a href="#precios" class="text-sm text-slate-400 hover:text-white transition-colors hidden sm:inline">Planes y Precios</a>
+                <button onclick="openLoginModal()" class="text-sm bg-borderClr/50 hover:bg-borderClr hover:text-white text-slate-300 px-4 py-2 rounded-lg transition-all border border-borderClr/80">Iniciar Sesión</button>
+                <button onclick="openRegisterModal()" class="text-sm bg-gradient-to-r from-accentBlue to-accentPurple hover:from-blue-600 hover:to-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow-lg shadow-blue-500/10 transition-all">Registrarse</button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="py-20 px-6 md:px-12 max-w-6xl mx-auto text-center flex flex-col items-center gap-6">
+            <div class="inline-flex items-center gap-2 bg-accentBlue/10 text-accentBlue px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide border border-accentBlue/20 uppercase mb-2">
+                <i class="fa-solid fa-sparkles"></i> Inteligencia Artificial Aplicada a Obras
+            </div>
+            
+            <h1 class="text-4xl md:text-6xl font-extrabold font-outfit text-white leading-tight tracking-tight max-w-4xl">
+                Crea Presupuestos de Construcción <span class="bg-clip-text text-transparent bg-gradient-to-r from-accentBlue via-blue-400 to-accentPurple">Inteligentes en Segundos</span>
+            </h1>
+            
+            <p class="text-slate-400 text-base md:text-lg max-w-2xl leading-relaxed">
+                Plataforma SaaS para contratistas e ingenieros. Administra partidas, calcula cómputos con IA Multimodal y genera análisis de precios unitarios (APU) profesionales.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 mt-4 w-full justify-center items-center">
+                <button onclick="openRegisterModal()" class="w-full sm:w-auto bg-gradient-to-r from-accentBlue to-accentPurple text-white px-8 py-3 rounded-lg font-semibold text-base shadow-xl shadow-blue-500/20 hover:scale-[1.02] transition-transform duration-200">
+                    Comenzar Gratis
+                </button>
+                <a href="#precios" class="w-full sm:w-auto text-center bg-slate-800 hover:bg-slate-700 text-slate-200 px-8 py-3 rounded-lg font-semibold text-base border border-borderClr transition-colors">
+                    Ver Precios
+                </a>
+            </div>
+        </header>
+
+        <!-- Features Grid -->
+        <section class="py-16 px-6 md:px-12 bg-slate-900/50 border-y border-borderClr">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold text-center font-outfit text-white mb-12">Herramientas profesionales para tu negocio</h2>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Feature 1 -->
+                    <div class="bg-bgPanel/40 p-6 rounded-xl border border-borderClr/50 hover:border-accentBlue/30 transition-all flex flex-col gap-4">
+                        <div class="h-12 w-12 rounded-lg bg-accentBlue/15 text-accentBlue flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-database"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-outfit">Catálogo Nacional de Partidas</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Acceso a más de 1800 partidas pre-cargadas para obras civiles, electricidad, pintura e infraestructura.</p>
+                    </div>
+                    <!-- Feature 2 -->
+                    <div class="bg-bgPanel/40 p-6 rounded-xl border border-borderClr/50 hover:border-accentPurple/30 transition-all flex flex-col gap-4">
+                        <div class="h-12 w-12 rounded-lg bg-accentPurple/15 text-accentPurple flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-microchip"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-outfit">Análisis 3D con IA (Pro)</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Carga un render o plano del espacio, define las medidas y nuestra IA estimará las partidas necesarias automáticamente.</p>
+                    </div>
+                    <!-- Feature 3 -->
+                    <div class="bg-bgPanel/40 p-6 rounded-xl border border-borderClr/50 hover:border-accentOrange/30 transition-all flex flex-col gap-4">
+                        <div class="h-12 w-12 rounded-lg bg-accentOrange/15 text-accentOrange flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-outfit">Análisis de Precios (APU)</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Generación instantánea de hojas APU detallando mano de obra, materiales y equipos con precios en PDF (Pro).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="precios" class="py-20 px-6 md:px-12 max-w-6xl mx-auto w-full">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-center font-outfit text-white mb-2">Planes Sencillos y Transparentes</h2>
+            <p class="text-slate-400 text-center text-sm md:text-base max-w-xl mx-auto mb-16">
+                Elige el plan que mejor se adapte a tu volumen de trabajo. Puedes actualizar o cancelar en cualquier momento.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Free Plan -->
+                <div class="bg-bgPanel/60 rounded-2xl p-8 border border-borderClr flex flex-col justify-between relative overflow-hidden">
+                    <div class="flex flex-col gap-4">
+                        <h3 class="text-xl font-bold font-outfit text-white">Plan Free</h3>
+                        <p class="text-slate-400 text-xs">Ideal para probar la herramienta o realizar cómputos muy pequeños.</p>
+                        <div class="my-4">
+                            <span class="text-4xl font-extrabold text-white font-outfit">$0</span>
+                            <span class="text-slate-400 text-sm"> / para siempre</span>
+                        </div>
+                        <hr class="border-borderClr my-2">
+                        <ul class="flex flex-col gap-3 text-sm text-slate-300">
+                            <li><i class="fa-solid fa-check text-accentBlue mr-2"></i> <strong>1 solo presupuesto</strong> guardado en la nube</li>
+                            <li><i class="fa-solid fa-check text-accentBlue mr-2"></i> Máximo **10 partidas** en el presupuesto</li>
+                            <li><i class="fa-solid fa-check text-accentBlue mr-2"></i> Búsqueda en el Catálogo de partidas</li>
+                            <li><i class="fa-solid fa-check text-accentBlue mr-2"></i> Descarga de PDF básico (máx 65 partidas)</li>
+                            <li class="text-slate-500 line-through"><i class="fa-solid fa-xmark mr-2 text-slate-600"></i> Análisis de imágenes 3D con IA</li>
+                            <li class="text-slate-500 line-through"><i class="fa-solid fa-xmark mr-2 text-slate-600"></i> Asistente de Chat Gemini Civil</li>
+                            <li class="text-slate-500 line-through"><i class="fa-solid fa-xmark mr-2 text-slate-600"></i> Reporte APU desglosado en PDF</li>
+                        </ul>
+                    </div>
+                    <button onclick="openRegisterModal()" class="w-full mt-8 bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-xl font-semibold border border-borderClr transition-all">
+                        Registrarse Gratis
+                    </button>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="bg-bgPanel/80 rounded-2xl p-8 border-2 border-accentPurple/50 relative flex flex-col justify-between overflow-hidden shadow-2xl shadow-purple-500/5">
+                    <div class="absolute -top-3 -right-12 bg-accentPurple text-white text-[10px] uppercase font-bold py-1 px-12 rotate-45 tracking-widest">
+                        Recomendado
+                    </div>
+                    
+                    <div class="flex flex-col gap-4">
+                        <h3 class="text-xl font-bold font-outfit text-white flex items-center gap-2">
+                            Plan Pro <span class="bg-accentPurple/20 text-accentPurple text-[10px] font-semibold py-0.5 px-2 rounded-full uppercase border border-accentPurple/20">Acceso Total</span>
+                        </h3>
+                        <p class="text-slate-400 text-xs">Para ingenieros y contratistas profesionales que buscan potencia total.</p>
+                        
+                        <div class="my-4 flex flex-col">
+                            <div>
+                                <span class="text-4xl font-extrabold text-white font-outfit">€29.99</span>
+                                <span class="text-slate-400 text-sm"> / mes</span>
+                            </div>
+                            <span class="text-xs text-accentPurple mt-1" id="pricingRateBcv">Equivalente en Bs. según tasa oficial BCV</span>
+                        </div>
+                        <hr class="border-borderClr my-2">
+                        <ul class="flex flex-col gap-3 text-sm text-slate-300">
+                            <li><i class="fa-solid fa-check text-accentPurple mr-2"></i> <strong>Presupuestos ILIMITADOS</strong> en la nube</li>
+                            <li><i class="fa-solid fa-check text-accentPurple mr-2"></i> Partidas ilimitadas por presupuesto</li>
+                            <li><i class="fa-solid fa-check text-accentPurple mr-2"></i> <strong>Exportación de APUs en PDF</strong></li>
+                            <li><i class="fa-solid fa-check text-accentPurple mr-2"></i> Análisis Multimodal de Planos e Imagen 3D</li>
+                            <li><i class="fa-solid fa-check text-accentPurple mr-2"></i> Asistente Gemini Civil en el editor</li>
+                            <li><i class="fa-solid fa-check text-accentPurple mr-2"></i> Memoria Descriptiva generada por IA</li>
+                            <li><i class="fa-solid fa-check text-accentPurple mr-2"></i> Lista de Materiales consolidada (BOM)</li>
+                        </ul>
+                    </div>
+                    <button onclick="openRegisterModal()" class="w-full mt-8 bg-gradient-to-r from-accentBlue to-accentPurple hover:from-blue-600 hover:to-purple-600 text-white py-2.5 rounded-xl font-semibold shadow-lg shadow-purple-500/20 hover:scale-[1.01] transition-all">
+                        Suscribirse a Pro
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="border-t border-borderClr py-8 text-center text-xs text-slate-500 bg-slate-950 mt-auto">
+            © 2026 JRobotWeb SaaS. Todos los derechos reservados.
+        </footer>
+    </div>
+
+
+    <!-- =========================================================================
+         2. SECCIÓN: DASHBOARD SAAS (Visible al estar logueado)
+         ========================================================================= -->
+    <div id="dashboardPage" class="hidden flex-1 flex flex-col bg-bgMain">
+        <!-- Header -->
+        <header class="bg-bgPanel/80 border-b border-borderClr py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 z-40 backdrop-blur-md">
+            <div class="flex items-center gap-3">
+                <div class="h-8 w-8 bg-gradient-to-tr from-accentBlue to-accentPurple rounded flex items-center justify-center text-white">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <span class="font-bold text-lg font-outfit text-white">JRobotWeb SaaS Dashboard</span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <!-- User Profile Display -->
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-semibold text-white" id="userDisplayName">Usuario Demo</p>
+                        <span id="userPlanBadge" class="text-[10px] font-bold py-0.5 px-2.5 rounded-full uppercase">Plan Free</span>
+                    </div>
+                    <div class="h-10 w-10 rounded-full bg-slate-700 flex items-center justify-center text-white border border-borderClr font-bold" id="userAvatar">
+                        UD
+                    </div>
+                </div>
+                <button id="btnAdminPanel" onclick="openAdminModal()" class="text-xs text-accentPurple hover:text-white transition-colors flex items-center gap-1.5 bg-accentPurple/10 px-3 py-2 rounded-lg border border-accentPurple/25 hidden">
+                    <i class="fa-solid fa-user-shield text-accentPurple"></i> Panel Admin
+                </button>
+                <button onclick="openSupportModal()" class="text-xs text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 bg-slate-800 px-3 py-2 rounded-lg border border-borderClr/60">
+                    <i class="fa-solid fa-headset text-accentBlue"></i> Soporte / Sugerencias
+                </button>
+                <button onclick="cerrarSesion()" class="text-xs text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 bg-slate-800 px-3 py-2 rounded-lg border border-borderClr/60">
+                    <i class="fa-solid fa-right-from-bracket"></i> Salir
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <main class="flex-1 p-6 md:p-12 max-w-6xl w-full mx-auto flex flex-col gap-8">
+            <!-- SaaS Stats / Subscription Status Widget -->
+            <div class="grid md:grid-cols-[1fr_320px] gap-6">
+                
+                <!-- Welcome & Sub Widget -->
+                <div class="bg-gradient-to-r from-bgPanel to-slate-800 p-6 rounded-xl border border-borderClr flex flex-col justify-between gap-4 relative overflow-hidden">
+                    <div class="flex flex-col gap-2">
+                        <h2 class="text-xl font-bold font-outfit text-white" id="welcomeUserText">¡Hola, Ingeniero!</h2>
+                        <p class="text-slate-400 text-sm max-w-xl">
+                            Bienvenido a tu panel de control de presupuestos. Aquí puedes ver y gestionar tus proyectos almacenados en la nube.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-4 mt-2">
+                        <button onclick="crearNuevoPresupuesto()" class="bg-accentBlue hover:bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2 shadow-lg shadow-blue-500/10">
+                            <i class="fa-solid fa-plus"></i> Crear Nuevo Presupuesto
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Plan Summary Widget -->
+                <div id="subscriptionWidget" class="bg-bgPanel p-6 rounded-xl border border-borderClr flex flex-col justify-between gap-4">
+                    <div class="flex flex-col gap-1.5">
+                        <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Estado de Suscripción</span>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="text-lg font-extrabold text-white" id="widgetPlanName">Plan Free</span>
+                            <span id="widgetPlanStatus" class="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">Activo</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2" id="widgetLimitText">
+                            Límite: 1 Presupuesto (hasta 10 partidas).
+                        </p>
+                    </div>
+                    
+                    <div id="widgetUpgradeArea">
+                        <button onclick="openCheckoutModal()" class="w-full bg-gradient-to-r from-accentBlue to-accentPurple hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-2 rounded-lg text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-500/15">
+                            <i class="fa-solid fa-gem"></i> Actualizar a Pro (€29.99/mes)
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Budgets Section -->
+            <div class="flex flex-col gap-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold font-outfit text-white flex items-center gap-2">
+                        <i class="fa-solid fa-folder-open text-accentBlue"></i> Mis Presupuestos Guardados (Nube)
+                    </h3>
+                    <span class="text-xs text-slate-400" id="budgetsCountText">Presupuestos creados: 0 / 1</span>
+                </div>
+
+                <!-- Empty State -->
+                <div id="budgetsEmptyState" class="bg-bgPanel/30 border border-dashed border-borderClr rounded-xl py-16 text-center flex flex-col items-center gap-4">
+                    <div class="h-16 w-16 bg-slate-800/80 rounded-full flex items-center justify-center text-slate-500 text-2xl border border-borderClr">
+                        <i class="fa-solid fa-folder-plus"></i>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <p class="font-semibold text-white">No tienes presupuestos en la nube</p>
+                        <p class="text-xs text-slate-400">Haz clic en 'Crear Nuevo Presupuesto' para comenzar a diseñar.</p>
+                    </div>
+                </div>
+
+                <!-- Budgets Grid -->
+                <div id="budgetsGrid" class="hidden grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    <!-- Cards injected via JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <!-- =========================================================================
+         3. SECCIÓN: EDITOR DE PRESUPUESTO (Upgrade de la versión original)
+         ========================================================================= -->
+    <div id="editorPage" class="hidden flex-1 flex flex-col overflow-hidden h-screen text-xs">
+        <!-- Editor Header -->
+        <header class="bg-bgPanel border-b border-borderClr px-4 py-2 flex justify-between items-center shrink-0">
+            <div class="flex items-center gap-3">
+                <button onclick="volverAlDashboard()" class="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1.5 rounded transition-colors flex items-center gap-1">
+                    <i class="fa-solid fa-house"></i> Dashboard
+                </button>
+                <div class="h-px w-4 bg-borderClr"></div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-file-invoice text-accentBlue"></i>
+                    <input type="text" id="editorProjectTitle" value="Nuevo Presupuesto" class="bg-transparent border-b border-dashed border-transparent hover:border-slate-500 focus:border-accentBlue focus:outline-none font-bold text-white text-sm py-0.5 px-1 w-64">
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <!-- Limit Indicator -->
+                <div id="editorLimitIndicator" class="text-[10px] text-slate-400 font-semibold bg-slate-800 px-3 py-1 rounded-full border border-borderClr hidden">
+                    Partidas: <span id="editorItemsCount">0</span> / 10
+                </div>
+
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="showCosts" checked class="w-4 h-4 rounded border-borderClr bg-bgMain focus:ring-accentBlue">
+                    <span class="text-[11px]">Mostrar Costos (P.U y Totales)</span>
+                </label>
+                
+                <div class="flex items-center gap-2">
+                    <label for="bcvRate" class="font-semibold text-white text-[11px]">Tasa de Cambio BCV (USD/VES):</label>
+                    <input type="number" id="bcvRate" value="36.50" step="0.01" class="bg-bgMain border border-borderClr text-white px-2 py-1 rounded w-20 text-right focus:outline-none focus:border-accentBlue font-semibold">
+                </div>
+
+                <button onclick="guardarPresupuestoEnNube()" class="bg-accentGreen hover:bg-emerald-600 text-white font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 transition-colors">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Guardar en la Nube
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Editor Body -->
+        <main class="flex-1 flex gap-4 p-4 overflow-hidden h-full">
+            
+            <!-- Left Column: Visual & Analysis -->
+            <div class="w-[35%] flex flex-col gap-3 min-w-[300px]">
+                <div class="bg-bgPanel border border-borderClr rounded-lg p-3 flex-1 flex flex-col gap-2 relative overflow-hidden">
+                    <h2 class="font-semibold text-white flex items-center gap-1 text-xs shrink-0">
+                        <i class="fa-solid fa-image text-slate-400"></i> Visualización del Proyecto (Render / Plano)
+                    </h2>
+                    
+                    <!-- Image Container -->
+                    <div id="imageContainer" class="flex-1 bg-bgMain border border-borderClr/60 rounded flex flex-col items-center justify-center text-center p-4 relative overflow-hidden group">
+                        <div id="imagePlaceholder" class="text-slate-500">
+                            <p class="mb-1 text-xs">Sin imagen cargada</p>
+                            <p class="text-[10px] italic">Presione 'Cargar Imagen' para mostrar el render del espacio.</p>
+                        </div>
+                        <img id="previewImage" src="" alt="Preview" class="hidden absolute inset-0 w-full h-full object-contain">
+                        <input type="file" id="imageInput" class="hidden" accept="image/*">
+                    </div>
+
+                    <!-- Image Buttons -->
+                    <div class="flex gap-2 shrink-0">
+                        <button id="btnCargarImagen" class="flex-1 bg-accentBlue hover:bg-blue-600 text-white py-1.5 rounded flex items-center justify-center gap-1 transition-colors" onclick="document.getElementById('imageInput').click()">
+                            <i class="fa-solid fa-folder-open"></i> Cargar Imagen
+                        </button>
+                        <button id="btnEliminarImagen" class="bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white px-3 py-1.5 rounded transition-colors" title="Eliminar Imagen">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+
+                    <!-- AI Analysis Button Widget -->
+                    <div class="mt-1 relative group" id="btnAnalizarIAContainer">
+                        <button id="btnAnalizarIA" class="w-full bg-accentPurple hover:bg-purple-700 text-white py-2 rounded font-semibold flex items-center justify-center gap-1.5 transition-colors">
+                            <i class="fa-solid fa-microchip"></i> Analizar con IA Multimodal
+                        </button>
+                        <!-- Locked layer for Free -->
+                        <div class="absolute inset-0 bg-bgPanel/80 backdrop-blur-[1px] hidden items-center justify-center gap-2 rounded border border-accentPurple/20 cursor-pointer" id="aiAnalysisLockedLayer" onclick="promptUpgrade('Análisis de imágenes con IA')">
+                            <i class="fa-solid fa-lock text-accentPurple text-sm"></i>
+                            <span class="text-[10px] font-bold text-accentPurple uppercase tracking-wider">Premium Pro</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Form, Assistant & Table -->
+            <div class="w-[65%] flex flex-col gap-4 overflow-hidden h-full">
+                
+                <!-- Row 1: Client Fields & Assistant (Split) -->
+                <div class="grid grid-cols-[220px_1fr] gap-4 shrink-0">
+                    
+                    <!-- Client Info -->
+                    <div class="bg-bgPanel border border-borderClr rounded-lg p-3 flex flex-col gap-2">
+                        <h2 class="font-semibold text-white flex items-center justify-between gap-1 text-[11px]">
+                            <span><i class="fa-solid fa-user text-slate-400"></i> Datos del Cliente</span>
+                            <button onclick="openProfModal()" class="text-accentBlue hover:underline text-[9px] font-semibold flex items-center gap-0.5"><i class="fa-solid fa-building"></i> Logo / Firma</button>
+                        </h2>
+                        <div class="flex flex-col gap-1.5">
+                            <input type="text" id="clientNombre" placeholder="Cliente / Empresa" class="bg-bgMain border border-borderClr text-white px-2 py-1 rounded w-full focus:border-accentBlue focus:outline-none text-[10px]">
+                            <input type="text" id="clientTelefono" placeholder="Teléfono" class="bg-bgMain border border-borderClr text-white px-2 py-1 rounded w-full focus:border-accentBlue focus:outline-none text-[10px]">
+                            <input type="text" id="clientUbicacion" placeholder="Dirección / Obra" class="bg-bgMain border border-borderClr text-white px-2 py-1 rounded w-full focus:border-accentBlue focus:outline-none text-[10px]">
+                        </div>
+                    </div>
+
+                    <!-- Gemini Assistant Chat -->
+                    <div class="bg-bgPanel border border-borderClr rounded-lg p-3 flex flex-col gap-1.5 relative overflow-hidden h-[125px]">
+                        <h2 class="font-semibold text-white flex items-center gap-1.5 text-[11px] shrink-0">
+                            <i class="fa-solid fa-robot text-accentBlue"></i> Asistente Gemini: AI Civil Engineer
+                        </h2>
+                        
+                        <div id="chatMessages" class="flex-1 overflow-y-auto pr-1 flex flex-col gap-1.5 text-[10px]">
+                            <div class="text-slate-400 italic text-center mt-2" id="chatWelcomeMsg">Ingresa qué partidas deseas añadir, modificar o remover.</div>
+                        </div>
+                        
+                        <div class="flex gap-2 shrink-0">
+                            <input type="text" id="chatInput" placeholder="Ej: Añade 45m2 de concreto f'c=250 para vigas..." class="flex-1 bg-bgMain border border-borderClr text-white px-3 py-1 rounded focus:border-accentBlue focus:outline-none text-[10px]">
+                            <button id="btnSendChat" class="bg-accentBlue hover:bg-blue-600 text-white px-3 py-1 rounded font-semibold transition-colors flex items-center justify-center">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+
+                        <!-- Locked layer for Free -->
+                        <div class="absolute inset-0 bg-bgPanel/80 backdrop-blur-[1.5px] hidden items-center justify-center flex-col gap-1.5 cursor-pointer z-10" id="chatLockedLayer" onclick="promptUpgrade('Asistente de Chat Gemini')">
+                            <i class="fa-solid fa-lock text-accentBlue text-lg"></i>
+                            <span class="text-[10px] font-bold text-accentBlue uppercase tracking-wider">Desbloquear Asistente IA (Pro)</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Row 2: Catalog Search Bar -->
+                <div class="flex gap-3 shrink-0 items-center">
+                    <div class="relative flex-1">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input type="text" id="catalogSearchInput" placeholder="Escriba código o descripción para buscar partidas del catálogo de construcción..." class="w-full bg-bgPanel border border-borderClr text-white pl-8 pr-3 py-1.5 rounded focus:border-accentBlue focus:outline-none">
+                    </div>
+                    <div id="catalogSearchResults" class="absolute left-4 right-4 bg-bgPanel border border-borderClr rounded-lg shadow-2xl z-50 max-h-48 overflow-y-auto hidden">
+                        <!-- Search results injected here -->
+                    </div>
+                </div>
+
+                <!-- Row 3: Budget Table -->
+                <div class="flex-1 flex flex-col overflow-hidden rounded-lg border border-borderClr bg-bgPanel relative">
+                    <div class="overflow-x-auto overflow-y-auto flex-1">
+                        <table class="w-full text-left whitespace-nowrap" id="budgetTable">
+                            <thead class="sticky top-0 bg-bgMain border-b border-borderClr text-slate-300 z-10 font-semibold">
+                                <tr>
+                                    <th class="py-2 px-3 w-20">Código</th>
+                                    <th class="py-2 px-3">Descripción de la Partida</th>
+                                    <th class="py-2 px-3 text-center w-14">Unid.</th>
+                                    <th class="py-2 px-3 text-center w-20">Cant.</th>
+                                    <th class="py-2 px-3 text-right w-24 cost-col">P. Unit ($)</th>
+                                    <th class="py-2 px-3 text-right w-28 cost-col">Subtotal ($)</th>
+                                    <th class="py-2 px-3 text-right w-28 cost-col">Subtotal (Bs.)</th>
+                                    <th class="py-2 px-3 text-center w-16">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody" class="divide-y divide-borderClr/60">
+                                <!-- Table rows injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Totals Bar -->
+                    <div class="bg-[#1e3c72] text-white flex justify-between items-center px-4 py-2 font-bold text-xs shrink-0 cost-col">
+                        <div>TOTAL GENERAL (USD): $<span id="totalUSD">0.00</span></div>
+                        <div>Total Partidas: <span id="totalPartidas">0</span></div>
+                        <div>TOTAL GENERAL (VES): Bs. <span id="totalVES">0.00</span></div>
+                    </div>
+                </div>
+
+                <!-- Row 4: Action Buttons Bottom -->
+                <div class="flex gap-2 shrink-0 py-1">
+                    <button id="btnGenerarPDF" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-2 rounded font-semibold flex items-center justify-center gap-1 border border-borderClr transition-colors">
+                        <i class="fa-solid fa-file-pdf"></i> Presupuesto PDF
+                    </button>
+                    
+                    <!-- APU PDF (Premium) -->
+                    <div class="flex-1 relative">
+                        <button id="btnGenerarApuPDF" class="w-full bg-accentBlue hover:bg-blue-600 text-white py-2 rounded font-semibold flex items-center justify-center gap-1 transition-colors">
+                            <i class="fa-solid fa-file-invoice-dollar"></i> Reporte APUs (PDF)
+                        </button>
+                        <!-- Free overlay -->
+                        <div class="absolute inset-0 bg-bgPanel/80 backdrop-blur-[1px] hidden items-center justify-center gap-1 cursor-pointer rounded" id="apuPdfLockedLayer" onclick="promptUpgrade('Reporte de APUs en PDF')">
+                            <i class="fa-solid fa-lock text-accentBlue"></i>
+                            <span class="text-[9px] font-bold text-accentBlue uppercase">Premium Pro</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Memoria Descriptiva (Premium) -->
+                    <div class="flex-1 relative">
+                        <button id="btnGenerarMemoriaIA" class="w-full bg-[#4a5568] hover:bg-slate-600 text-white py-2 rounded font-semibold flex items-center justify-center gap-1 transition-colors">
+                            <i class="fa-solid fa-book"></i> Memoria Descriptiva
+                        </button>
+                        <div class="absolute inset-0 bg-bgPanel/80 backdrop-blur-[1px] hidden items-center justify-center gap-1 cursor-pointer rounded" id="memoriaLockedLayer" onclick="promptUpgrade('Memoria Descriptiva con IA')">
+                            <i class="fa-solid fa-lock text-slate-400"></i>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase">Premium Pro</span>
+                        </div>
+                    </div>
+                    
+                    <!-- BOM Materials List (Premium) -->
+                    <div class="flex-1 relative">
+                        <button id="btnListaMateriales" class="w-full bg-accentOrange hover:bg-orange-600 text-white py-2 rounded font-semibold flex items-center justify-center gap-1 transition-colors">
+                            <i class="fa-solid fa-boxes-stacked"></i> Lista de Materiales (BOM)
+                        </button>
+                        <div class="absolute inset-0 bg-bgPanel/80 backdrop-blur-[1px] hidden items-center justify-center gap-1 cursor-pointer rounded" id="bomLockedLayer" onclick="promptUpgrade('Lista consolidada de materiales (BOM)')">
+                            <i class="fa-solid fa-lock text-accentOrange"></i>
+                            <span class="text-[9px] font-bold text-accentOrange uppercase">Premium Pro</span>
+                        </div>
+                    </div>
+
+                    <button id="btnNuevoPresupuesto" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded font-semibold transition-colors">
+                        Nuevo
+                    </button>
+                </div>
+                
+            </div>
+        </main>
+    </div>
+
+
+    <!-- =========================================================================
+         4. MODALS (AUTH & CHECKOUT)
+         ========================================================================= -->
+    
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-bgPanel border border-borderClr p-8 rounded-2xl w-full max-w-md shadow-2xl relative">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-2xl font-bold font-outfit text-white mb-6">Iniciar Sesión</h3>
+            <form id="loginForm" onsubmit="handleLogin(event)" class="flex flex-col gap-4">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-slate-400 font-semibold">Correo Electrónico</label>
+                    <input type="email" id="loginEmail" required placeholder="tu@correo.com" class="bg-bgMain border border-borderClr rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-accentBlue text-sm">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-slate-400 font-semibold">Contraseña</label>
+                    <input type="password" id="loginPassword" required placeholder="******" class="bg-bgMain border border-borderClr rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-accentBlue text-sm">
+                </div>
+                <button type="submit" class="bg-gradient-to-r from-accentBlue to-accentPurple hover:from-blue-600 hover:to-purple-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-500/10 mt-2 transition-all">
+                    Ingresar
+                </button>
+            </form>
+            <p class="text-center text-xs text-slate-400 mt-4">
+                ¿No tienes cuenta? <a href="#" onclick="switchAuthModal('register')" class="text-accentBlue hover:underline">Regístrate aquí</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-bgPanel border border-borderClr p-8 rounded-2xl w-full max-w-md shadow-2xl relative">
+            <button onclick="closeRegisterModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-2xl font-bold font-outfit text-white mb-6">Crear Cuenta</h3>
+            <form id="registerForm" onsubmit="handleRegister(event)" class="flex flex-col gap-4">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-slate-400 font-semibold">Nombre Completo</label>
+                    <input type="text" id="registerNombre" required placeholder="Ing. Carlos Pérez" class="bg-bgMain border border-borderClr rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-accentBlue text-sm">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-slate-400 font-semibold">Correo Electrónico</label>
+                    <input type="email" id="registerEmail" required placeholder="tu@correo.com" class="bg-bgMain border border-borderClr rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-accentBlue text-sm">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-slate-400 font-semibold">Contraseña</label>
+                    <input type="password" id="registerPassword" required placeholder="Mínimo 6 caracteres" minlength="6" class="bg-bgMain border border-borderClr rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-accentBlue text-sm">
+                </div>
+                <button type="submit" class="bg-gradient-to-r from-accentBlue to-accentPurple hover:from-blue-600 hover:to-purple-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-500/10 mt-2 transition-all">
+                    Registrarse y Comenzar
+                </button>
+            </form>
+            <p class="text-center text-xs text-slate-400 mt-4">
+                ¿Ya tienes cuenta? <a href="#" onclick="switchAuthModal('login')" class="text-accentBlue hover:underline">Inicia sesión</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Checkout Modal (PayPal / Bank Transfer in EUR at BCV rate) -->
+    <div id="checkoutModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-bgPanel border border-borderClr rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden relative">
+            
+            <!-- Modal Header -->
+            <div class="bg-slate-900 border-b border-borderClr py-4 px-6 flex justify-between items-center">
+                <h3 class="text-lg font-bold font-outfit text-white flex items-center gap-2">
+                    <i class="fa-solid fa-gem text-accentPurple"></i> Adquirir Suscripción Plan Pro
+                </h3>
+                <button onclick="closeCheckoutModal()" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <!-- Price Display -->
+            <div class="bg-accentPurple/10 border-b border-borderClr px-6 py-4 flex justify-between items-center text-sm">
+                <div>
+                    <p class="font-bold text-white">Suscripción Mensual Pro</p>
+                    <p class="text-xs text-slate-400">Acceso ilimitado a todas las herramientas IA y APUs</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xl font-extrabold text-accentPurple font-outfit">€29.99<span class="text-xs text-slate-400 font-normal">/mes</span></p>
+                    <p class="text-[10px] text-slate-400" id="checkoutVESAmount">Equivalente: Bs. 1,094.64</p>
+                </div>
+            </div>
+
+            <!-- Tab Headers -->
+            <div class="flex border-b border-borderClr bg-bgMain">
+                <button onclick="switchPaymentTab('paypal')" id="tabBtnPaypal" class="flex-1 py-3 text-xs font-bold border-b-2 border-accentBlue text-white flex items-center justify-center gap-1.5 bg-bgPanel/30">
+                    <i class="fa-brands fa-paypal text-blue-400"></i> PayPal
+                </button>
+                <button onclick="switchPaymentTab('transfer')" id="tabBtnTransfer" class="flex-1 py-3 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-building-columns"></i> Transferencia Bancaria
+                </button>
+            </div>
+
+            <!-- Modal Content Panels -->
+            <div class="p-6">
+                <!-- PayPal Panel -->
+                <div id="panelPaypal" class="flex flex-col gap-4">
+                    <div class="bg-blue-900/10 border border-blue-900/40 p-4 rounded-xl text-xs text-blue-300 leading-relaxed flex gap-2">
+                        <i class="fa-solid fa-circle-info text-base mt-0.5"></i>
+                        <span>Serás redirigido a nuestro checkout seguro simulado de PayPal para procesar los **€29.99**. El acceso es inmediato tras el pago.</span>
+                    </div>
+                    
+                    <form onsubmit="handleMockPaypalPayment(event)" class="flex flex-col gap-3">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] text-slate-400 font-semibold uppercase">Correo de Cuenta PayPal</label>
+                            <input type="email" required placeholder="tu-paypal@correo.com" class="bg-bgMain border border-borderClr rounded-lg px-3 py-2 text-white focus:outline-none focus:border-accentBlue text-xs">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] text-slate-400 font-semibold uppercase">Contraseña</label>
+                            <input type="password" required placeholder="******" class="bg-bgMain border border-borderClr rounded-lg px-3 py-2 text-white focus:outline-none focus:border-accentBlue text-xs">
+                        </div>
+                        <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-2.5 rounded-lg shadow-lg mt-2 transition-all flex items-center justify-center gap-2 text-xs">
+                            <i class="fa-brands fa-paypal"></i> Pagar con PayPal (€29.99)
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Bank Transfer Panel -->
+                <div id="panelTransfer" class="hidden flex flex-col gap-4">
+                    <div class="bg-slate-900 p-4 rounded-xl border border-borderClr text-[11px] flex flex-col gap-1.5">
+                        <p class="font-bold text-white mb-1"><i class="fa-solid fa-university text-accentBlue mr-1"></i> Datos Bancarios (Pago en EUR o Bs. equivalente)</p>
+                        <p><strong>Banco:</strong> Mercantil Banco C.A.</p>
+                        <p><strong>Beneficiario:</strong> JRobotWeb C.A. (RIF: J-40893321-2)</p>
+                        <p><strong>Cuenta:</strong> 0105-0024-45-1024392182</p>
+                        <p><strong>Monto a transferir:</strong> <span class="text-accentOrange font-bold" id="checkoutTransferAmountEUR">€29.99</span> (o <span class="text-accentBlue font-bold" id="checkoutTransferAmountVES">Bs. 0.00</span>)</p>
+                    </div>
+
+                    <form onsubmit="handleMockTransferPayment(event)" class="flex flex-col gap-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] text-slate-400 font-semibold uppercase">Banco Origen</label>
+                                <input type="text" id="transferBanco" required placeholder="Ej: Banesco" class="bg-bgMain border border-borderClr rounded-lg px-3 py-2 text-white focus:outline-none focus:border-accentBlue text-xs">
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] text-slate-400 font-semibold uppercase">Número de Referencia</label>
+                                <input type="text" id="transferReferencia" required placeholder="Ej: 1294827" class="bg-bgMain border border-borderClr rounded-lg px-3 py-2 text-white focus:outline-none focus:border-accentBlue text-xs">
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] text-slate-400 font-semibold uppercase">Captura de Comprobante (Opcional)</label>
+                            <input type="file" accept="image/*" class="bg-bgMain border border-borderClr rounded-lg px-3 py-1.5 text-slate-400 text-xs">
+                        </div>
+                        <button type="submit" class="bg-accentBlue hover:bg-blue-600 text-white font-bold py-2.5 rounded-lg shadow-lg mt-2 transition-all flex items-center justify-center gap-1.5 text-xs">
+                            <i class="fa-solid fa-circle-check"></i> Reportar y Activar Plan Pro
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Edit Item Modal -->
+    <div id="editModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-bgPanel border border-borderClr rounded-xl w-full max-w-lg shadow-2xl overflow-hidden relative">
+            <div class="bg-slate-900 px-4 py-3 flex justify-between items-center border-b border-borderClr">
+                <h3 class="text-sm font-semibold text-white flex items-center gap-1.5">
+                    <i class="fa-solid fa-pen text-accentBlue"></i> Modificar Partida
+                </h3>
+                <button type="button" onclick="closeEditModal()" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="px-6 py-4 bg-[#252526]">
+                <input type="hidden" id="editItemId">
+                
+                <div class="mb-3">
+                    <label class="block text-xs text-slate-400 mb-1">Descripción</label>
+                    <textarea id="editItemDesc" rows="3" class="bg-bgMain border border-borderClr text-white px-2 py-1.5 rounded w-full focus:outline-none focus:border-accentBlue text-xs"></textarea>
+                </div>
+                
+                <div class="flex gap-4 mb-2">
+                    <div class="flex-1">
+                        <label class="block text-xs text-slate-400 mb-1">Unidad</label>
+                        <input type="text" id="editItemUnidad" class="bg-bgMain border border-borderClr text-white px-2 py-1.5 rounded w-full focus:outline-none focus:border-accentBlue text-xs">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs text-slate-400 mb-1">Cantidad</label>
+                        <input type="number" id="editItemCantidad" step="0.01" class="bg-bgMain border border-borderClr text-white px-2 py-1.5 rounded w-full focus:outline-none focus:border-accentBlue text-xs text-right">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs text-slate-400 mb-1">P. Unitario (USD)</label>
+                        <input type="number" id="editItemPrecio" step="0.01" class="bg-bgMain border border-borderClr text-white px-2 py-1.5 rounded w-full focus:outline-none focus:border-accentBlue text-xs text-right">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-slate-900 px-4 py-3 flex justify-end border-t border-borderClr gap-2">
+                <button type="button" id="btnSaveEdit" class="inline-flex justify-center rounded bg-accentBlue px-4 py-1.5 text-xs font-semibold text-white hover:bg-blue-600">
+                    <i class="fa-solid fa-floppy-disk mr-2"></i> Guardar Cambios
+                </button>
+                <button type="button" onclick="closeEditModal()" class="inline-flex justify-center rounded bg-slate-700 px-4 py-1.5 text-xs font-semibold text-white hover:bg-slate-600">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Analysis Modal -->
+    <div id="aiModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-bgPanel border border-borderClr rounded-xl w-full max-w-lg shadow-2xl overflow-hidden">
+            <div class="bg-slate-900 px-4 py-2.5 flex justify-between items-center border-b border-borderClr">
+                <h3 class="text-xs font-semibold text-white flex items-center gap-1.5">
+                    <i class="fa-solid fa-expand text-accentBlue"></i> Análisis de IA Multimodal 3D
+                </h3>
+                <button type="button" onclick="closeAiModal()" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 bg-[#252526] flex flex-col gap-4">
+                <p class="text-[11px] text-white font-semibold text-center">Ingrese las dimensiones reales del espacio para cálculos volumétricos de obra:</p>
+                
+                <!-- Inputs -->
+                <div class="flex justify-center items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-slate-400">Largo (m):</label>
+                        <input type="number" id="aiLargo" step="0.01" value="4.00" class="bg-bgMain border border-borderClr text-white px-2 py-1 rounded w-16 focus:outline-none focus:border-accentBlue text-center text-xs">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-slate-400">Ancho (m):</label>
+                        <input type="number" id="aiAncho" step="0.01" value="3.00" class="bg-bgMain border border-borderClr text-white px-2 py-1 rounded w-16 focus:outline-none focus:border-accentBlue text-center text-xs">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-slate-400">Alto (m):</label>
+                        <input type="number" id="aiAlto" step="0.01" value="2.60" class="bg-bgMain border border-borderClr text-white px-2 py-1 rounded w-16 focus:outline-none focus:border-accentBlue text-center text-xs">
+                    </div>
+                </div>
+
+                <!-- Requirements -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-slate-400">Necesidades del cliente / Especificaciones (Opcional):</label>
+                    <textarea id="aiRequerimientos" rows="3" placeholder="Ej: Se requiere revestimiento cerámico de alta calidad en las paredes hasta la altura del techo, instalar 6 puntos de iluminación led..." class="bg-bgMain border border-borderClr text-white p-2 rounded w-full focus:outline-none focus:border-accentBlue text-xs resize-none"></textarea>
+                </div>
+                
+                <div class="flex justify-center mt-2">
+                    <button type="button" id="btnIniciarAnalisis" class="inline-flex justify-center items-center rounded bg-accentBlue hover:bg-blue-600 px-6 py-2 text-xs font-semibold text-white transition-colors">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Iniciar Análisis de Volumen IA
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOM Modal (Lista de materiales) -->
+    <div id="bomModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-bgPanel border border-borderClr rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden">
+            <div class="bg-slate-900 px-4 py-3 flex justify-between items-center border-b border-borderClr">
+                <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-boxes-packing text-accentOrange"></i> Lista Consolidada de Materiales (BOM)
+                </h3>
+                <button type="button" onclick="closeBomModal()" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="overflow-x-auto max-h-80 border border-borderClr rounded-lg">
+                    <table class="w-full text-left text-xs whitespace-nowrap">
+                        <thead class="bg-bgMain border-b border-borderClr sticky top-0 font-semibold text-slate-300">
+                            <tr>
+                                <th class="py-2 px-3">Código</th>
+                                <th class="py-2 px-3">Descripción del Insumo</th>
+                                <th class="py-2 px-3 text-center">Unid.</th>
+                                <th class="py-2 px-3 text-right">Cantidad Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bomTableBody" class="divide-y divide-borderClr/60">
+                            <!-- Rows loaded by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="bg-slate-900 px-4 py-3 flex justify-end border-t border-borderClr gap-2">
+                <button type="button" class="inline-flex justify-center rounded bg-accentOrange px-4 py-1.5 text-xs font-semibold text-white hover:bg-orange-600" onclick="window.print()">
+                    <i class="fa-solid fa-print mr-1.5"></i> Imprimir BOM
+                </button>
+                <button type="button" onclick="closeBomModal()" class="inline-flex justify-center rounded bg-slate-700 px-4 py-1.5 text-xs font-semibold text-white hover:bg-slate-600">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Screen Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center z-[100]">
+        <div class="flex flex-col items-center">
+            <i class="fa-solid fa-spinner fa-spin text-4xl text-accentBlue mb-4"></i>
+            <p class="text-white font-semibold text-sm" id="loadingText">Procesando...</p>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         5. MODALES ADICIONALES (EMISOR, SOPORTE, ADMIN)
+         ========================================================================= -->
+    
+    <!-- Modal: Configuración del Profesional / Logo -->
+    <div id="profModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-bgPanel border border-borderClr rounded-xl p-6 w-full max-w-md shadow-2xl flex flex-col gap-4">
+            <div class="flex justify-between items-center border-b border-borderClr pb-3">
+                <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-building text-accentBlue"></i> Configurar Profesional / Logo</h3>
+                <button onclick="closeProfModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex flex-col gap-3">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs text-slate-400">Empresa / Marca Constructora:</label>
+                    <input type="text" id="profEmpresa" placeholder="Ej: Constructora JRobotWeb C.A." class="bg-bgMain border border-borderClr rounded-lg px-3 py-2 text-white focus:outline-none focus:border-accentBlue text-xs">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs text-slate-400">Profesional Responsable (Firma):</label>
+                    <input type="text" id="profNombre" placeholder="Ej: Ing. Carlos Pérez" class="bg-bgMain border border-borderClr rounded-lg px-3 py-2 text-white focus:outline-none focus:border-accentBlue text-xs">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs text-slate-400">Logotipo de la Empresa:</label>
+                    <input type="file" id="profLogoFile" accept="image/*" class="text-xs text-slate-400 file:bg-slate-800 file:text-white file:border file:border-borderClr file:rounded file:px-2 file:py-1 file:mr-2 file:cursor-pointer">
+                    <div id="profLogoPreviewContainer" class="hidden mt-2 p-2 border border-borderClr rounded bg-bgMain flex justify-center items-center relative h-16 w-16">
+                        <img id="profLogoPreview" class="max-h-full max-w-full object-contain">
+                        <button onclick="clearProfLogo()" class="absolute -top-1 -right-1 bg-red-600 hover:bg-red-700 text-white rounded-full h-4 w-4 flex items-center justify-center text-[9px]"><i class="fa-solid fa-times"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end border-t border-borderClr pt-3 mt-2">
+                <button onclick="closeProfModal()" class="px-4 py-2 rounded bg-slate-800 hover:bg-slate-700 text-white font-medium text-xs">Cancelar</button>
+                <button onclick="saveProfConfig()" class="px-4 py-2 rounded bg-accentBlue hover:bg-blue-600 text-white font-medium text-xs">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Soporte y Sugerencias -->
+    <div id="supportModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-bgPanel border border-borderClr rounded-xl p-6 w-full max-w-md shadow-2xl flex flex-col gap-4">
+            <div class="flex justify-between items-center border-b border-borderClr pb-3">
+                <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-headset text-accentBlue"></i> Soporte / Sugerencias</h3>
+                <button onclick="closeSupportModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex flex-col gap-3">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs text-slate-400">Tipo de Reporte:</label>
+                    <select id="supportTipo" class="bg-bgMain border border-borderClr rounded-lg px-3 py-2 text-white focus:outline-none focus:border-accentBlue text-xs">
+                        <option value="sugerencia">Sugerencia de Mejora para el Servicio</option>
+                        <option value="soporte">Contacto con Soporte Técnico</option>
+                    </select>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs text-slate-400">Mensaje / Descripción:</label>
+                    <textarea id="supportMensaje" rows="5" placeholder="Escribe detalladamente tu mensaje..." class="bg-bgMain border border-borderClr rounded-lg px-3 py-2 text-white focus:outline-none focus:border-accentBlue text-xs resize-none"></textarea>
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end border-t border-borderClr pt-3 mt-2">
+                <button onclick="closeSupportModal()" class="px-4 py-2 rounded bg-slate-800 hover:bg-slate-700 text-white font-medium text-xs">Cancelar</button>
+                <button onclick="sendSupportReport()" class="px-4 py-2 rounded bg-accentBlue hover:bg-blue-600 text-white font-medium text-xs">Enviar Mensaje</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Panel de Control de Administración -->
+    <div id="adminModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-bgPanel border border-borderClr rounded-xl p-6 w-full max-w-4xl max-h-[85vh] shadow-2xl flex flex-col gap-4 overflow-hidden">
+            <div class="flex justify-between items-center border-b border-borderClr pb-3 shrink-0">
+                <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-user-shield text-accentPurple"></i> Panel de Control de Administración</h3>
+                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="flex gap-2 border-b border-borderClr pb-2 shrink-0">
+                <button id="tabUsersBtn" onclick="switchAdminTab('users')" class="px-3 py-1.5 rounded font-bold text-xs bg-accentPurple text-white">Usuarios y Planes PRO</button>
+                <button id="tabSugsBtn" onclick="switchAdminTab('sugs')" class="px-3 py-1.5 rounded font-bold text-xs bg-slate-800 text-slate-300 hover:text-white">Sugerencias y Soporte</button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto min-h-0 py-2">
+                <!-- Tab: Users -->
+                <div id="adminTabUsers" class="flex flex-col gap-4">
+                    <div class="overflow-x-auto border border-borderClr rounded-lg bg-bgMain">
+                        <table class="w-full text-[11px] text-left">
+                            <thead class="bg-bgPanel text-slate-300 border-b border-borderClr uppercase font-semibold">
+                                <tr>
+                                    <th class="px-4 py-3">Usuario / Email</th>
+                                    <th class="px-4 py-3">Nombre</th>
+                                    <th class="px-4 py-3">Plan</th>
+                                    <th class="px-4 py-3">Status</th>
+                                    <th class="px-4 py-3">Vencimiento</th>
+                                    <th class="px-4 py-3 text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-borderClr text-slate-200" id="adminUsersTableBody">
+                                <!-- Cargado dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Formulario de Edición de Plan (Oculto por defecto, se activa al seleccionar un usuario) -->
+                    <div id="adminEditPlanForm" class="hidden p-4 border border-borderClr rounded-lg bg-bgPanel flex flex-col gap-3">
+                        <h4 class="font-bold text-xs text-white">Asignar Plan Pro / Vigencia a: <span id="adminEditUserEmail" class="text-accentBlue"></span></h4>
+                        <input type="hidden" id="adminEditUserId">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] text-slate-400">Plan de Acceso:</label>
+                                <select id="adminEditPlan" class="bg-bgMain border border-borderClr rounded px-2 py-1 text-white focus:outline-none focus:border-accentBlue text-xs">
+                                    <option value="free">Gratis (Plan Free)</option>
+                                    <option value="pro">Pro (Plan de Pago)</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] text-slate-400">Estado Suscripción:</label>
+                                <select id="adminEditStatus" class="bg-bgMain border border-borderClr rounded px-2 py-1 text-white focus:outline-none focus:border-accentBlue text-xs">
+                                    <option value="active">Activo</option>
+                                    <option value="expired">Expirado / Suspendido</option>
+                                    <option value="pending">Pendiente de Verificación</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] text-slate-400">Fecha de Expiración:</label>
+                                <input type="date" id="adminEditExpiry" class="bg-bgMain border border-borderClr rounded px-2 py-1 text-white focus:outline-none focus:border-accentBlue text-xs">
+                            </div>
+                        </div>
+                        <div class="flex gap-2 justify-end mt-2">
+                            <button onclick="cancelAdminEditPlan()" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-white text-[10px]">Cancelar</button>
+                            <button onclick="saveAdminUserPlan()" class="px-3 py-1.5 rounded bg-accentPurple hover:bg-purple-700 text-white text-[10px]">Guardar Cambios</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab: Sugerencias -->
+                <div id="adminTabSugs" class="hidden flex flex-col gap-4">
+                    <div class="flex flex-col gap-3" id="adminSugsList">
+                        <!-- Cargado dinámicamente -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end border-t border-borderClr pt-3 shrink-0">
+                <button onclick="closeAdminModal()" class="px-4 py-2 rounded bg-slate-800 hover:bg-slate-700 text-white font-medium text-xs">Cerrar Panel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/app.js?v=20260703h"></script>
+</body>
+</html>

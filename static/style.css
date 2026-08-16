@@ -1,0 +1,83 @@
+/* Custom Styles to complement Tailwind */
+
+/* Custom Scrollbar for better UI (Dark Mode specific) */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #1e1e1e; /* bgPanel */
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #555555; /* borderClr */
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #888888;
+}
+
+/* Chrome, Safari, Edge, Opera - Hide arrows in number input */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox - Hide arrows in number input */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Remove default blue outline in some browsers for number inputs and fallback to Tailwind focus */
+input:focus {
+    outline: none;
+}
+
+/* Make table headers sticky in specific scrolling tables */
+th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Print Specific Styles */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #bomModalPanel, #bomModalPanel * {
+        visibility: visible;
+    }
+    #bomModalPanel {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        border: none;
+        box-shadow: none;
+        background: white !important; /* Force white background for printing */
+        color: black !important; /* Force black text for printing */
+    }
+    /* Hide specific modal parts during print */
+    #closeModalBtn, #closeModalBtnFooter, button[onclick="window.print()"] {
+        display: none !important;
+    }
+    /* Force table styling for print */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+    th {
+        background-color: #f2f2f2 !important;
+        color: black !important;
+    }
+}
