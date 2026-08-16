@@ -140,6 +140,41 @@ def inicializar_db():
         _sembrar_datos_ejemplo(cursor)
         conn.commit()
         print("Base de datos APU inicializada y sembrada con éxito.")
+        
+    # Sembrar usuarios administradores por defecto si no existen
+    cursor.execute("SELECT COUNT(*) FROM Usuarios WHERE email = ?", ("admin@jrobotwweb.com",))
+    if cursor.fetchone()[0] == 0:
+        # Registrar admin@jrobotwweb.com con contraseña admin123
+        cursor.execute("""
+            INSERT INTO Usuarios (email, password_hash, nombre)
+            VALUES (?, ?, ?)
+        """, (
+            "admin@jrobotwweb.com",
+            "dc9686d9a020b6eeb5043f9f988cdd84:99e628cb68bbb3485c6af2ec88e06dc02c53d40c40e1751778550b040c2d7bbe",
+            "Administrador JRobotWeb"
+        ))
+        
+        # También registrar admin@jrobotweb.com con contraseña admin123
+        cursor.execute("""
+            INSERT INTO Usuarios (email, password_hash, nombre)
+            VALUES (?, ?, ?)
+        """, (
+            "admin@jrobotweb.com",
+            "dc9686d9a020b6eeb5043f9f988cdd84:99e628cb68bbb3485c6af2ec88e06dc02c53d40c40e1751778550b040c2d7bbe",
+            "Administrador JRobotWeb (Variacion)"
+        ))
+        
+        # También sembrar la suscripción activa para estos administradores
+        cursor.execute("SELECT id FROM Usuarios WHERE email = ?", ("admin@jrobotwweb.com",))
+        admin1_id = cursor.fetchone()[0]
+        cursor.execute("INSERT OR IGNORE INTO Suscripciones (user_id, plan, status) VALUES (?, 'pro', 'active')", (admin1_id,))
+        
+        cursor.execute("SELECT id FROM Usuarios WHERE email = ?", ("admin@jrobotweb.com",))
+        admin2_id = cursor.fetchone()[0]
+        cursor.execute("INSERT OR IGNORE INTO Suscripciones (user_id, plan, status) VALUES (?, 'pro', 'active')", (admin2_id,))
+        
+        conn.commit()
+        print("Usuarios administradores creados por defecto.")
     
     conn.close()
 
