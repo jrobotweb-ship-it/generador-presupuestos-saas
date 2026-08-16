@@ -624,7 +624,7 @@ def registrar_sugerencia_api(req: SugerenciaRequest, user = Depends(require_auth
 
 def require_admin(user = Depends(require_auth)):
     """Verifica si el usuario es administrador (email jrobotweb o admin)."""
-    is_admin = (user["email"] in ["admin@jrobotweb.com", "admin@presupuestos.jrobotweb.com", "jrobotweb@gmail.com"])
+    is_admin = (user["email"] in ["admin@jrobotweb.com", "admin@presupuestos.jrobotweb.com", "jrobotweb@gmail.com", "admin@jrobotwweb.com"])
     if not is_admin:
         raise HTTPException(status_code=403, detail="Acceso denegado. Se requieren privilegios de Administrador.")
     return user
